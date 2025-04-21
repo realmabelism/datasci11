@@ -1,0 +1,296 @@
+---
+title: "Homework 8"
+author: ""
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+# Do not modify this chunk.
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# Making sure all packages that are required are installed
+libs <- c('tidyverse','tidytext', 'textdata', 'babynames', 'gutenbergr')
+for(l in libs){
+  if(!require(l,character.only = TRUE, quietly = TRUE)){
+    message( sprintf('Did not have the required package << %s >> installed. Downloading now ... ',l))
+    if(l!="dsbox") install.packages(l) 
+    if(l=="dsbox") devtools::install_github("tidyverse/dsbox")
+  }
+}
+
+library(tidyverse)
+library(tidytext)
+library(textdata)
+library(babynames)
+library(gutenbergr)
+
+# Download the AFINN lexicon explicitly
+lexicon_afinn()
+lexicon_nrc()
+```
+
+
+
+# Instructions
+
+**Due: 11:59pm on Friday, 4/25**
+
+1. Add your name between the quotation marks on the author line in the YAML above.
+
+2. Compose your answer to each problem between the bars of red stars.
+
+3. If partially completed code is provided, you will see that `eval = FALSE` in the `R` chunk options. After editing/completing the code, make sure to change that to `eval = TRUE`.
+
+4. Be sure to knit your .Rmd to a .pdf file.
+
+5. Upload your knitted .pdf to Gradescope before the deadline.
+
+
+
+
+
+
+
+
+## Problem 1: What's in a Name?  (You'd Be Surprised!)
+  
+Load the `babynames` dataset, which contains yearly information on the frequency of baby names by sex and is provided by the US Social Security Administration.  It includes all names with at least 5 uses per year per sex. In this problem, we are going to practice pattern matching!
+
+```{r}
+library(babynames)
+data("babynames")
+?babynames
+```
+
+a. For 2000, find the ten most popular female baby names that start with the letter Z.
+
+```{r, eval = FALSE}
+#Hint: Use 
+top_n(___)
+```
+
+
+******************************************
+
+
+
+******************************************
+
+
+
+b. For 2000, find the ten most popular female baby names that contain the letter z.  
+
+******************************************
+
+
+******************************************
+
+
+c. For 2000, find the ten most popular female baby names that end in the letter z. 
+
+******************************************
+
+
+
+******************************************
+
+
+d. Review the lists of names you found in parts (a)-(c). *Using data joins*, find the names that show up in more than one list.
+
+******************************************
+
+
+
+******************************************
+
+
+
+e.  Verify that none of the baby names contain a number (0-9) in them.
+
+******************************************
+
+
+
+******************************************
+
+
+f. While none of the names contain 0-9, that doesn't mean they don't contain "one", "two", ..., or "nine".  Create a table that provides the number of times a baby's name contained the word "zero", the word "one", ... , the word "nine".  Which written number or numbers *don't* show up in any of the baby names?
+
+Notes: 
+
+- I recommend first converting all the names to lower case.
+
+- If none of the baby's names contain the written number, then you can leave the number out of the table.
+
+- Use `str_extract()`, not `str_extract_all()`. (We will ignore names where more than one of the words exists.)
+
+*Hint*: You will have two steps that require pattern matching:
+    1. Subset your table to only include the rows with the desired words.
+    2. Add a column that contains the desired word.  
+
+******************************************
+
+
+
+******************************************
+
+
+
+
+g. Create a table that contains the names and their frequencies for the two least common written numbers.
+
+******************************************
+
+
+
+******************************************
+
+
+h. Redo part (f), but this time produce a table that counts the number of babies named "zero", "one", "two", ... "nine" (instead of just containing the number).  How does this table compare to the table in (f)? (Hint: Use word boundary anchor `\\b(word)\\b` in the argument `pattern` to find the "word" only when it stands alone)
+
+
+******************************************
+
+
+
+******************************************
+
+
+i. List out the names that contain **no** vowels (consider "y" to be a vowel).  
+
+******************************************
+
+
+
+******************************************
+
+
+
+
+### Problem 2: Tidying the "Call of the Wild"
+
+Did you read "Call of the Wild" by Jack London when you were growing up?  If not, [read the first paragraph of its wiki page](https://en.wikipedia.org/wiki/The_Call_of_the_Wild) for a quick summary and then let's do some text analysis on this classic!  The code below should read the text of the book into R using the `gutenbergr` package. **If for some reason this code isn't working, try changing the** `mirror_url` **to one of the URLs from:** \url{https://www.gutenberg.org/MIRRORS.ALL}.
+
+```{r}
+library(gutenbergr)
+mirror_url <- "http://mirror.csclub.uwaterloo.ca/gutenberg/"
+wild <- gutenberg_download(215, mirror = mirror_url)
+```
+
+a.  Create a tidy text dataset where you tokenize by words.
+
+
+******************************************
+
+
+
+******************************************
+
+
+
+b. Find the frequency of the 20 most common words.  Make sure to remove stop words using `anti_join()` function.
+
+******************************************
+
+
+
+******************************************
+
+
+c. Create a bar graph and a word cloud of the frequencies of the 20 most common words found in part (b).
+
+
+******************************************
+
+
+
+******************************************
+
+
+
+d. Explore the sentiment of the text using *three* of the sentiment lexicons in `tidytext`. (Hint: see help R documentation of `get_sentiments()` function) What does your analysis say about the sentiment of the text?
+
+Notes:
+
+- Make sure to NOT remove stop words this time (Hint: use `inner_join()` function)
+
+- `afinn` is a numeric score and should be handled differently compared to the categorical scores.
+
+
+******************************************
+
+
+
+******************************************
+
+
+
+
+
+e. If you didn't do so in part (d), compute the average sentiment score of the text using the `afinn` lexicon.  Which positive words had the biggest impact? Which negative words had the biggest impact?
+
+
+******************************************
+
+
+
+******************************************
+
+
+f. You should have found in part (e) that "no" was an important negative word in the sentiment score.  To know if that really makes sense, let's turn to the raw lines of text for context.  Pull out all of the lines that have the word "no" in them.  Make sure to not pull out extraneous lines (e.g., a line with the word "now").  
+
+******************************************
+
+
+******************************************
+
+
+
+
+g. We can also look at how the sentiment of the text changes as the text progresses.  Below, I have added two columns to the original dataset. 
+
+```{r}
+wild_time <- wild %>%
+  mutate(line = row_number(), index = floor(line/45) + 1) 
+```
+
+Now I want you to do the following wrangling:
+
+- Tidy the data (but don't drop stop words).
+
+- Add the word sentiments using the `bing` lexicon.
+
+- Count the frequency of sentiments by the `index` variable.
+
+- Reshape the data to be wide with the count of the negative sentiments in one column and the positive in another, along with a column for `index`
+
+- Compute a `sentiment` column by subtracting the negative score from the positive score.
+    
+
+
+```{r, eval = FALSE}
+#Hint: fill = 0 will insert zero instead of NA
+pivot_XXX(..., values_fill = 0)
+```
+
+
+******************************************
+
+
+
+******************************************
+
+
+
+
+h. Create a plot of the `sentiment` scores as the text progresses.
+
+
+******************************************
+
+
+
+******************************************
+
+
